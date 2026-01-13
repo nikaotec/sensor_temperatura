@@ -1,0 +1,222 @@
+{
+  "name": "esp32",
+  "nodes": [
+    {
+      "parameters": {
+        "topics": "esp32c3/data",
+        "options": {
+          "jsonParseBody": true,
+          "onlyMessage": true
+        }
+      },
+      "type": "n8n-nodes-base.mqttTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b94540a7-8733-453c-8528-9b50205a1bcc",
+      "name": "MQTT Trigger",
+      "credentials": {
+        "mqtt": {
+          "id": "5LDdEBBF138A8fIE",
+          "name": "MQTT account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dc0ca98f-1d6d-4dbd-ad83-eedb7b235e5b",
+              "name": "'0'].devic",
+              "value": "={{ $json['0'].device }}",
+              "type": "string"
+            },
+            {
+              "id": "bafc55d8-c929-46d1-a195-c5fafdb3f7b3",
+              "name": "'0'].temperatur",
+              "value": "={{ $json['0'].temperatura }}",
+              "type": "number"
+            },
+            {
+              "id": "4e647ab4-ee2b-48a7-a730-15c39b8fa35a",
+              "name": "'0'].rel",
+              "value": "={{ $json['0'].rele }}",
+              "type": "string"
+            },
+            {
+              "id": "5e8d933f-f7f4-4005-a69d-ae9ded7730db",
+              "name": "'0'].hor",
+              "value": "={{ $json['0'].hora }}",
+              "type": "string"
+            },
+            {
+              "id": "a1d8b7c4-0df9-4171-bb3c-521260ab5308",
+              "name": "'0'].dat",
+              "value": "={{ $json['0'].data }}",
+              "type": "string"
+            },
+            {
+              "id": "6a269ce2-bf99-4198-bd20-2bb8251b4c6c",
+              "name": "'0'].msg",
+              "value": "=Dispositivo: {{ $json['0'].device }}\nTemperature: {{ $json['0'].temperatura }}\nRele: {{ $json['0'].rele }}\nData: {{ $json['0'].data }}\nHora: {{ $json['0'].hora }}",
+              "type": "string"
+            },
+            {
+              "id": "5ea428bd-5b17-41b6-9585-3e9edfaec822",
+              "name": "numeros",
+              "value": "[{ \"phone\": \"5581995981890\" }, { \"phone\": \"5581996678501\" }]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "b9c1e5d8-ef12-4f7a-9ad1-1f46e047daf2",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "esp32",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -32,
+        -304
+      ],
+      "id": "e0f6d0e0-c4c2-4c94-ba10-5d31e6bf8cca",
+      "name": "Webhook",
+      "webhookId": "d59f3f0c-2a67-462c-8b02-c4c5fa456918"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "esp32",
+        "remoteJid": "=5581995981890",
+        "messageText": "={{ $json['\\'0\\''].msg }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "4d475db9-9a2f-4cfc-9b52-2f9122e10120",
+      "name": "Enviar texto",
+      "credentials": {
+        "evolutionApi": {
+          "id": "F29upGb9eXIftIeT",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "41495b69-a11f-4c5e-85cd-36fb7cf7dde2",
+      "name": "Wait",
+      "webhookId": "a07f83fa-9ef3-4fb6-9dce-fb47fd6b95bb"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "esp32",
+        "remoteJid": "=5581996678501",
+        "messageText": "={{ $('Enviar texto').item.json.data.message.conversation }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        816,
+        0
+      ],
+      "id": "6bea5427-152b-4b7e-9bc3-67c3d69d70e9",
+      "name": "Enviar texto1",
+      "credentials": {
+        "evolutionApi": {
+          "id": "F29upGb9eXIftIeT",
+          "name": "Evolution account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "MQTT Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar texto": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Enviar texto1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "f9a7ee08-606c-479e-b380-59043d1f4452",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e55307ef03cc855a384646e6280e2b225e12e39282fe7a03ea7707b33ecdc81c"
+  },
+  "id": "3Wp0i8PtYaj7xyv2wFGom",
+  "tags": []
+}
